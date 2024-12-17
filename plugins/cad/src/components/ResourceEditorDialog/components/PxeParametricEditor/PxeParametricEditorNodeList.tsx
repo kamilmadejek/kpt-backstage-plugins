@@ -19,9 +19,7 @@ import React from 'react';
 import { PxeParametricEditorNode } from './PxeParametricEditorNode';
 import { PxeConfigurationEntry } from './types/PxeConfiguration.types';
 import { PxeResourceChangeRequestHandler } from './types/PxeParametricEditor.types';
-import { chunkByTrait } from './utils/general/chunkByTrait';
-import { isSectionNode } from './utils/nodePredicates';
-import { renderGroupedArray } from './utils/rendering/renderGroupedArray';
+import { makeStyles } from '@material-ui/core';
 
 type PxeParametricEditorNodeListProps = {
   readonly entries: readonly PxeConfigurationEntry[];
@@ -30,19 +28,27 @@ type PxeParametricEditorNodeListProps = {
 
 export const PxeParametricEditorNodeList: React.FC<PxeParametricEditorNodeListProps> = React.memo(
   ({ entries, onResourceChangeRequest }) => {
-    const groupedEntries = chunkByTrait(entries, entry => isSectionNode(entry) || null);
-
+    const classes = useClasses();
     return (
-      <>
-        {renderGroupedArray(groupedEntries, (entry, groupIndex, itemIndex) => (
+      <div className={classes.nodesContainer}>
+        {entries.map((entry, index) => (
           <PxeParametricEditorNode
-            key={`${groupIndex}-${itemIndex}`}
+            key={`${index}`}
             configurationEntry={entry}
             onResourceChangeRequest={onResourceChangeRequest}
           />
         ))}
-      </>
+      </div>
     );
   },
   isEqual,
 );
+
+const useClasses = makeStyles({
+  nodesContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: '18px',
+  },
+});
